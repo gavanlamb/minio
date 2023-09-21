@@ -1,0 +1,63 @@
+﻿version: '3.9'
+services:
+  minio:
+    image: minio/minio:latest
+    volumes:
+      - data:/data
+    networks:
+      - infrastructure
+    deploy:
+      replicas: 1
+      rollback_config:
+        parallelism: 0
+        failure_action: continue
+        order: stop-first
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: stop-first
+      labels:
+        prometheus.job: minio
+        prometheus.port: 9000
+        prometheus.path: /minio/v2/metrics/cluster
+        traefik.enable: 'true'
+        traefik.http.routers.minio.rule: Host(`minio.gavanlamb.com`)
+        traefik.http.routers.minio.entrypoints: websecure
+        traefik.http.routers.minio.tls.certresolver: letsencrypt
+        traefik.http.routers.minio.service: minio
+        traefik.http.services.minio.loadBalancer.server.port: 9000
+        traefik.http.routers.minio-console.rule: Host(`console.minio.gavanlamb.com`)
+        traefik.http.routers.minio-console.entrypoints: websecure
+        traefik.http.routers.minio-console.tls.certresolver: letsencrypt
+        traefik.http.routers.minio-console.service: minio-console
+        traefik.http.services.minio-console.loadBalancer.server.port: 9001    
+    command: minio server /data --console-address ":9001"
+    environment:
+      MINIO_VOLUMES: /data
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+      MINIO_PROMETHEUS_URL: prometheus
+      MINIO_PROMETHEUS_JOB_ID: minio
+    logging:
+      driver: loki
+      options:
+        loki-url: http://192.168.50.19:3100/loki/api/v1/push
+        loki-retries: 5
+        loki-batch-size: 20
+        loki-tenant-id: 1
+        loki-external-labels: "job=minio"
+
+volumes:
+  data:
+    name: data
+    driver_opts:
+      type: "nfs"
+      o: "addr=192.168.50.19,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14"
+      device: ":/share/docker/minio"
+
+networks:
+  infrastructure:
+    name: infrastructure
+    external: true
