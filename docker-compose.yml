@@ -5,7 +5,7 @@ services:
     volumes:
       - data:/data
     networks:
-      - infrastructure
+      - services
     deploy:
       replicas: 1
       placement:
@@ -57,6 +57,6 @@ volumes:
       device: ":/share/docker/minio"
 
 networks:
-  infrastructure:
-    name: infrastructure
+  services:
+    name: services
     external: true
