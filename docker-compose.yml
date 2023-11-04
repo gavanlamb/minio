@@ -3,7 +3,7 @@ services:
   minio:
     image: minio/minio:latest
     volumes:
-      - data:/data
+      - minio:/data
     networks:
       - services
     deploy:
@@ -48,8 +48,8 @@ services:
         loki-external-labels: "job=minio"
 
 volumes:
-  data:
-    name: data
+  minio:
+    name: minio
     driver_opts:
       type: "nfs"
       o: "nfsvers=4,addr=192.168.50.32,rw,noatime,rsize=8192,wsize=8192,tcp"
