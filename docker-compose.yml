@@ -22,20 +22,20 @@ services:
         order: stop-first
       labels:
         prometheus.job: minio
-        prometheus.port: 9000
+        prometheus.port: 10000
         prometheus.path: /minio/v2/metrics/cluster
         traefik.enable: 'true'
         traefik.http.routers.minio.rule: Host(`minio.gavanlamb.com`)
         traefik.http.routers.minio.entrypoints: websecure
         traefik.http.routers.minio.tls.certresolver: letsencrypt
         traefik.http.routers.minio.service: minio
-        traefik.http.services.minio.loadBalancer.server.port: 9000
+        traefik.http.services.minio.loadBalancer.server.port: 10000
         traefik.http.routers.minio-console.rule: Host(`console.minio.gavanlamb.com`)
         traefik.http.routers.minio-console.entrypoints: websecure
         traefik.http.routers.minio-console.tls.certresolver: letsencrypt
         traefik.http.routers.minio-console.service: minio-console
-        traefik.http.services.minio-console.loadBalancer.server.port: 9001    
-    command: minio server /data --console-address ":9001"
+        traefik.http.services.minio-console.loadBalancer.server.port: 10001    
+    command: minio server /data --address ":10000" --console-address ":10001"
     environment:
       MINIO_VOLUMES: /data
       MINIO_ROOT_USER: admin
