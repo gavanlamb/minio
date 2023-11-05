@@ -1,0 +1,26 @@
+﻿FROM ubuntu:22.04
+
+ENV ADMIN_USERNAME=$ADMIN_USERNAME
+ENV ADMIN_PASSWORD=$ADMIN_PASSWORD
+ENV DEPLOYMENT_NAME=$DEPLOYMENT_NAME
+ENV DEPLOYMENT_URL=$DEPLOYMENT_URL
+ENV DEPLOYMENT_REGION=$DEPLOYMENT_REGION
+ENV NEW_BUCKET_NAME=$NEW_BUCKET_NAME
+ENV NEW_GROUP_NAME=$NEW_GROUP_NAME
+ENV NEW_POLICY_PREFIX=$NEW_POLICY_PREFIX
+ENV NEW_USER_NAME=$NEW_USER_NAME
+ENV NEW_USER_PASSWORD=$NEW_USER_PASSWORD
+ENV NEW_USER_SERVICE_ACCOUNT_ACCESSKEY=$NEW_USER_SERVICE_ACCOUNT_ACCESSKEY
+ENV NEW_USER_SERVICE_ACCOUNT_SECRETKEY=$NEW_USER_SERVICE_ACCOUNT_SECRETKEY
+
+COPY ./scripts/create-bucket.sh /etc/create-bucket.sh
+
+RUN apt-get update -y  && \
+    apt install curl dnsutils jq -y && \
+    curl https://dl.min.io/client/mc/release/linux-amd64/mc --create-dirs -o /usr/local/bin/mc  && \
+    chmod +x /usr/local/bin/mc && \
+    chmod u+x /etc/create-bucket.sh
+
+ENTRYPOINT ["/bin/bash", "-c"]
+
+CMD ["/etc/create-bucket.sh"]
