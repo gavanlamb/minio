@@ -33,4 +33,4 @@ spec:
   tls:
     - hosts:
         - "console.minio.gavanlamb.com"
-		- "minio.gavanlamb.com"
+		    - "minio.gavanlamb.com"
