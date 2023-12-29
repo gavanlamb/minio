@@ -10,7 +10,7 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   rules:
-  	- host: "console.minio.gavanlamb.com"
+    - host: "console.minio.gavanlamb.com"
       http:
         paths:
           - pathType: Prefix
@@ -33,4 +33,4 @@ spec:
   tls:
     - hosts:
         - "console.minio.gavanlamb.com"
-	- "minio.gavanlamb.com"
+        - "minio.gavanlamb.com"
